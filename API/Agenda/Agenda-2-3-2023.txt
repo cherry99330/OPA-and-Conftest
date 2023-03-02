@@ -2,9 +2,6 @@ OPA Session - 02/03/2023
 
 Agenda:
 
-opa eval
-opa test
-
 1)What is Conftest
 
 Conftest is a utility to help you write tests against structured configuration data .Conftest relies on the Rego language from Open Policy Agent for writing policies.
@@ -46,9 +43,6 @@ When we write conftest verify, it locates policy folder and under that runs test
 
 Here as well,Policies by default should be placed in a directory called policy, but this can be overridden with the --policy flag.
 EX:conftest verify --policy .\title_test.rego --policy .\title.rego --policy .\input.rego  
-
-
-verify -- test.rego -
 conftest verify --output json 
 REF: https://www.conftest.dev/
 --- Demo trial2-conftest-policy & trial2-conftest---
@@ -112,11 +106,3 @@ In case of failure:
 we can see the input file conftest is taking for evaluating, we can check if its the correct one.
 
 --demo trial-json --- 
-
-
-if we dont have configuration files -- will conftest will work?
-what will be the configuration files for API, format for configurationfiles, types?
-multiple input files - conftest test
-Advantage of conftest -- multiple file format, prebuilt policies, put it into ci/cd pipeline.
---policy --input.rego?
-based on msg we cannot say its passing, how do you determine the result, is there any other way than msg?
