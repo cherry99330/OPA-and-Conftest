@@ -1,0 +1,7 @@
+[submodule "libfoo"]
+	path = include/foo
+	url = https://github.com/cherry99330/OPA-and-Conftest.git/
+
+[submodule "libbar"]
+	path = include/bar
+	url = git://bar.com/git/lib.git

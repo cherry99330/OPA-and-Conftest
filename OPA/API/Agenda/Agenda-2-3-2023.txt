@@ -1,0 +1,131 @@
+OPA Session - 02/03/2023
+
+Agenda:
+
+opa eval
+opa test
+
+1)What is Conftest
+
+Conftest is a utility to help you write tests against structured configuration data .Conftest relies on the Rego language from Open Policy Agent for writing policies.
+Conftest is designed to be integrated into a CI/CD pipeline, where it can validate configuration files before they are deployed to production.
+https://www.conftest.dev/
+
+2)Difference between OPA and Conftest
+
+(A)OPA is a general-purpose policy engine that can enforce policies across various domains.
+Conftest is a configuration validation tool that uses OPA's Rego language to test and enforce policies for configuration files. 
+
+(B)OPA can be deployed in various ways and integrated with various systems, while Conftest is a command-line tool primarily used for local testing and integration with CI/CD pipelines.
+
+3)How to test policy in Conftest against given input file
+Policies by default should be placed in a directory called policy, but this can be overridden with the --policy flag.
+
+1st way:
+command to run : conftest test -p title.rego openapi.json
+Here we are overridding the policy folder with -p.
+
+2nd way:
+command to run : conftest test openapi.json
+Here all the policies under the policy folder are being tested against the input openapi.json
+If we use this approach all the policies related to a particular service/api will be in one place. Easy to manage and locate policies as well.
+
+By default, Conftest looks for these rules in the main namespace, but this can be overriden with the --namespace flag or provided in the configuration file. To look in all namespaces, use the --all-namespaces flag.
+EX: 
+conftest test -p title.rego openapi.json --all-namespaces :---to check in all the packages present
+conftest test -p title.rego openapi.json -n <package_name> :-- to check in a specific package other than main
+conftest test .\openapi.json --all-namespaces --output=table
+
+REF : https://www.conftest.dev/
+---Demo trial & trial1-json----
+
+4)How to test/verfiy policy against unit test cases
+
+To test the policies we can use conftest verify to execute them and report on the results.
+command to use: conftest verify
+When we write conftest verify, it locates policy folder and under that runs test.rego file.
+
+Here as well,Policies by default should be placed in a directory called policy, but this can be overridden with the --policy flag.
+EX:conftest verify --policy .\title_test.rego --policy .\title.rego --policy .\input.rego  
+
+conftest verify --output json 
+REF: https://www.conftest.dev/
+--- Demo trial2-conftest-policy & trial2-conftest---
+
+5)When testing the policy through opa test, we should be able to see which policy is failing and which is passing.
+
+----Demo policyset-failure -----
+
+6)what is the benefit of using subpackages?
+
+subpackages can be used to organize and group related policy rules and data together.
+
+folder structure:
+
+main.rego - (imports subpackages from the services)
+    |-service1(newpackage)
+        |-package.rego (imports subpackages from package folder)
+        |-package folder
+            |- all the policies created for the service1
+    |-service2(oldpackage)
+        |-package.rego (imports subpackages from package folder)
+        |-package folder
+            |- all the policies created for the service2
+
+7)when we are trying to execute a policy with an input file, How can we determine that it is the correct one?
+
+When we run the command : conftest test --output=json  openapi.json, we get an output as
+In case of success:
+[
+        {
+                "filename": "openapi.json",
+                "namespace": "main",
+                "successes": 3
+        }
+]
+
+In case of failure:
+[
+        {
+                "filename": "failure.json",
+                "namespace": "main",
+                "successes": 0,
+                "failures": [
+                        {
+                                "msg": "Schema type should be string"
+                        },
+                        {
+                                "msg": "Title should end with API"
+                        },
+                        {
+                                "msg": "username parameter should not be present"
+                        }
+                ]
+        }
+]
+we can see the input file conftest is taking for evaluating, we can check if its the correct one.
+
+--demo trial-json --- 
+
+
+1)If we dont have configuration files -- will conftest will work?
+2)what will be the configuration files for API, format for configuration files, types?
+
+3)How to pass multiple input files in conftest test.----https://blogs.infosupport.com/policy-as-code-with-open-policy-agent-and-conftest/#:~:text=OPA%20is%20a%20policy%20engine,made%20against%20our%20configuration%20files.
+ conftest test .\failure.json .\openapi.json .\success.json
+ $ conftest test service.yaml deployment.yaml  >> output.yml
+opa exec .\title.rego .\openapi.json .\open.json
+
+4)What are the advantages of conftest.
+5)Based on msg we cannot say its passing, is there any other way than msg to determine the result?
+
+4)when we are trying to execute a policy with an input file, How can we determine that it is the correct one?
+5)conftest verify --policy --input.rego?
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+What is spego in OPA
+In the context of OPA (Open Policy Agent), "Spego" stands for "Service Provider Enforcement for Governance and Observability." It is a feature in OPA that provides centralized policy enforcement for services in a microservices architecture.
+
+With Spego, policies can be defined centrally and enforced across different services, allowing for consistent and unified governance and observability across an organization's service infrastructure. This can help ensure that services are compliant with security and regulatory requirements, as well as internal policies and best practices.
+
+Spego works by intercepting incoming requests to services and enforcing policy decisions based on the defined policies. It also provides observability into policy decisions and allows for auditing and monitoring of policy enforcement across services.

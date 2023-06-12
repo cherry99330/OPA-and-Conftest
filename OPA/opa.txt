@@ -1,0 +1,84 @@
+GitHub Repos:
+•	GitHub - EmbarkStudios/opa-policies: Contains OPA Policies for Dockerfiles, Kubernetes YAMLs, Terraform, etc
+•	GitHub - Scalr/sample-tf-opa-policies
+Setup OPA github actions:
+•	https://github.com/open-policy-agent/setup-opa
+Youtube Links:
+•	https://www.youtube.com/watch?v=T7ojX4YnmTA
+•	https://www.youtube.com/watch?v=3K0RqIvNfAc
+•	https://www.youtube.com/watch?v=87w9WGJRQ8w
+•	https://www.youtube.com/watch?v=ejH4EzmL7e0
+Documentation Links:
+•	https://www.openpolicyagent.org/docs/latest/
+
+
+Content shared by ASHA
+
+https://github.com/open-policy-agent/contrib
+https://youtu.be/r7sTaqTtaHk
+
+Content shared by Sucheta
+https://sangkeon.github.io/opaguide/chap2/installandusage.html#windows
+
+MY NOTES
+**Need to figure out how to deal with combination of success and failure input case**
+Steps:
+
+1)terraform init
+2)terraform plan --out tfplan.binary
+3)terraform show -json tfplan.binary > tfplan.json
+to format json --- press shift+alt+F
+4)prepare the test files
+5)opa test .-v
+
+For Policyset(terraform):
+
+Keep all the policies in a policy folder.Then run -
+
+1)opa build -b .\policy\    ----creates bundle with default name bundle.tar.gz
+ opa build -b --output="foo.tar.gz" .\policy\ --- creates bundle with name foo.tar.gz
+
+2)opa eval -b bundle.tar.gz --input openapi.json "data.sample1.allow"
+3)opa eval --data "policyset.rego" --data "search.rego" --data "title.rego" --data "username.rego" --input openapi.json "data.sample1.allow"
+4)opa eval -b bundle.tar.gz --input openapi.json --format pretty "data.sample1.allow"   
+
+For API testing using conftest:
+
+1) keep the policy in the policy folder
+2) input file in yaml format
+commands:
+conftest test ./policy title.yaml
+
+1) keep the policy and yaml input file in same place
+commands:
+conftest test -p title.rego title.yaml
+
+conftest test -p title.rego openapi.json --all-namespaces ---to check in all the packages present
+if use --trace it is showing step by step execution
+conftest test -p title.rego openapi.json -n search -- to check in a specific package other than main
+
+conftest verify:
+
+conftest verify --- must have policies under policy folder
+conftest verify --policy .\title_test.rego ----- if policy is not in policy folder
+conftest verify --output json 
+
+sprintf(format, values)
+Since OPA's Rego does not support variadic arguements, values passed to sprintf must be placed in an array.
+to print int we can use %d, and string we can use %s and the %v verb means to use the default format which can be overridden.
+
+opa inspect <bundlename>
+https://www.openpolicyagent.org/docs/latest/annotations/#inspect-command
+Need to work on:
+
+1) use case of multiple input & multiple package together
+2) 
+json ->input ->run policies on it
+same policy set --> 2 different input ?? does it provide this feature?
+150 policies -- 75 1st input..rem 75 policies--other input. 
+opa eval -b 1 -b 2 -i 1.json -i 2.json
+
+3)redirectong output from opa test
+4)when we are trying to execute a policy with an input file, How can we determine that it is the correct one?
+
+ tar -xvf bundle.tar.gz

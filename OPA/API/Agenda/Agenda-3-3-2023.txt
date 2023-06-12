@@ -1,0 +1,53 @@
+OPA Session - 3/3/2023
+
+Agenda
+
+1)Lets take an example , we have 150 policies and we want to provide starting 75 policies one input and other 75 policies other input.How can we do that.
+
+Sol: Store all the policies that need same input in one folder.
+
+Folder structure:
+    |-policyset1
+        |- all the policies that need same input:  conftest test -p .\policyset1\ .\failure.json --all-namespaces
+    |-policyset2
+        |-all the policies that need same input: conftest test -p .\policyset2\ .\success.json --all-namespaces  
+
+2)How to pass multiple input in conftest test.
+
+--Demo Multiple-policies---
+conftest test --policy .\policyset2\ .\success.json  .\failure.json --all-namespaces 
+conftest test --policy .\policyset1\title.rego .\failure.json .\success.json --all-namespaces  
+conftest test -p .\policyset2\ .\input\ --all-namespaces
+
+
+3)How can we redirect output from conftest test to another file.
+
+Sol: conftest test .\failure.json .\openapi.json --output=json  >> output.json
+
+
+Action items:
+[test this one against the policyset-failure]
+ACL
+strict mode
+opa check strict mode
+opa coverage
+github actions setup-opa
+https://github.com/marketplace/actions/opa-action
+
+print o/p just like it comes in rego playground
+how does that input comes to our policy?
+
+albert
+amverspknert
+Anders Eknert
+
+***What will be unit testing and integration testing in our case***
+*** for opa check -- json file should not be present in repo -- nned to change folder structure - getting error - policy\API-Example\deny_when_info_does_not_have_contact_obj\success.json: merge error***
+*** instead of coverage use threshold float to check for coverage***
+opa test .\policy\ --threshold 80
+opa test .\bundle.tar.gz --threshold 80
+Code coverage threshold not met: got 75.00 instead of 80.00
+
+az login --allow-no-subscription      
+az devops configure --defaults project=training-march2023 organization=https://dev.azure.com/gautamshivam98    
+az artifacts universal publish --organization https://dev.azure.com/gautamshivam98 --feed Testing --name bundle.tar.gz --version 0.0.1 --description "yesying" --path D:\backup\automation\OPA
